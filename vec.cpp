@@ -42,9 +42,20 @@ public:
         return Vectors(result); 
 
         
+    }
 
+    float dotProduct(const Vectors &other)const{
+        float dotProductValue = 0.f ; 
+        for(int i =0 ; i<v.size() ; i++){
+            dotProductValue+= this->v[i]*other.v[i]; 
+
+        }
+
+        return dotProductValue ; 
 
     }
+
+
 
 
     
@@ -95,7 +106,12 @@ int main () {
 
     Vectors v3Object = v1Object+v2Object; 
     std::cout <<"v1 + v2 : \n"; 
-    v3Object.printVector() ; 
+    v3Object.printVector() ;
+    
+    
+    std::cout<<"Dot Product : "<< v1Object.dotProduct(v2Object)<<std::endl ; 
+
+
 
 
     
