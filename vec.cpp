@@ -1,6 +1,7 @@
 #include<iostream>
 #include <vector> 
 #include <cmath>
+#include <algorithm> //for clamp function
 class Vectors {
 private: 
     std::vector<float> v ; 
@@ -45,14 +46,14 @@ public:
 
         }
 
-        else{
-            std::vector<float>addresult ; 
-            for(size_t i = 0 ; i < v.size(); i++ ){
-                addresult.push_back(this->v[i]+ other.v[i]); 
-            }
-            return Vectors(addresult); 
+    
+        std::vector<float>addresult ; 
+        for(size_t i = 0 ; i < v.size(); i++ ){
+            addresult.push_back(this->v[i]+ other.v[i]); 
+        }
+        return Vectors(addresult); 
 
-        } 
+         
     }
     
     Vectors operator -(const Vectors &other)const {
@@ -62,13 +63,13 @@ public:
 
         }
 
-        else{ 
-            std::vector<float>subresult ; 
-            for(int i = 0 ; i < v.size(); i++ ){
-                subresult.push_back(this->v[i]- other.v[i]); 
-            }
-            return Vectors(subresult); 
+    
+        std::vector<float>subresult ; 
+        for(int i = 0 ; i < v.size(); i++ ){
+            subresult.push_back(this->v[i]- other.v[i]); 
         }
+        return Vectors(subresult); 
+        
     }
 
     float dotProduct(const Vectors &other)const{
@@ -77,15 +78,15 @@ public:
             throw std::invalid_argument("Dimensions don't match"); 
 
         }
-        else{
-            float dotProductValue = 0.f ; 
-            for(int i =0 ; i<v.size() ; i++){
-                dotProductValue+= this->v[i]*other.v[i]; 
+        
+        float dotProductValue = 0.f ; 
+        for(int i =0 ; i<v.size() ; i++){
+            dotProductValue+= this->v[i]*other.v[i]; 
 
-            }
-
-            return dotProductValue ; 
         }
+
+        return dotProductValue ; 
+        
     }
 
 
@@ -116,31 +117,56 @@ public:
 
         }
 
-        else{ 
-            std::vector<float>Vecsubresult ; 
-            float magnitudeSubVectors= 0.f ; 
-            for(int i = 0 ; i < v.size(); i++ ){
-                Vecsubresult.push_back(this->v[i]- other.v[i]); 
-            }
-
-            for (float j : Vecsubresult){ 
-                magnitudeSubVectors += std::pow(j,2); 
-                
-            }
-            return sqrt(magnitudeSubVectors); 
-
-
-
+        
+        std::vector<float>Vecsubresult ; 
+        float magnitudeSubVectors= 0.f ; 
+        for(int i = 0 ; i < v.size(); i++ ){
+            Vecsubresult.push_back(this->v[i]- other.v[i]); 
         }
+
+        for (float j : Vecsubresult){ 
+            magnitudeSubVectors += std::pow(j,2); 
+            
+        }
+        return sqrt(magnitudeSubVectors); 
+
+
+
+        
 
 
         
     }
 
-    float cosineSimilarity(){
-           
-        
+    float cosineSimilarity(const Vectors &other)const{
+        if (this->v.size()!=other.v.size()){
+            throw std::invalid_argument("Dimensions don't match"); 
 
+        }
+        
+       float dotProductforCosine = this->dotProduct(other); 
+       float magnitude1 = this->magnitudeVector() ;
+       float magnitude2 =other.magnitudeVector() ;
+
+
+       if(magnitude1==0 ||magnitude2== 0 ){ 
+        throw std::invalid_argument("Cosine Similarity is undefined for zero vectors."); 
+       }
+
+       float cosValue= dotProductforCosine/(magnitude1*magnitude2); 
+       return cosValue ; 
+
+
+    }
+
+
+    float angleBetweenVectors(const Vectors &other)const { 
+       float cosValue=  this->cosineSimilarity(other); 
+       cosValue = std::clamp(cosValue, -1.0f, 1.0f)  ; 
+       float angleInRadians = std::acos(cosValue); 
+       return angleInRadians ; 
+       
+        
     }
 
 
@@ -208,7 +234,11 @@ int main () {
 
     std::cout<<"The distance between the vectors v1 and v2\t" ; 
     std::cout<< v1Object.DistanceBetweenVectors(v2Object)<<std::endl ; 
-    
+
+
+    std::cout<<"The Cos value of the vectors v1 and v2 : "<<v1Object.cosineSimilarity(v2Object)<<std::endl ;
+
+    std::cout<<"The angle between the vectors v1 and v2 (in Radians) :  "<<v1Object.angleBetweenVectors(v2Object)<<std::endl; 
 
 
     return 0 ; 
